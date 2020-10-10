@@ -13,6 +13,8 @@ import airsim
 import cv2
 import numpy as np
 
+from cv_bridge import CvBridge
+
 pub = rospy.Publisher("airsim/image_raw", Image, queue_size=1)
 rospy.init_node('image_raw', anonymous=True)
 rate = rospy.Rate(100) # 10hz
@@ -41,6 +43,8 @@ def main():
     client = airsim.CarClient()
     client.confirmConnection()
 
+    bridge = CvBridge()
+
     while not rospy.is_shutdown():
          # get camera images from the car
         responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
@@ -51,11 +55,9 @@ def main():
 
             img_rgb = img1d.reshape(response.height, response.width, 3)
             
-            img_rgb = cv2.flip(img_rgb, 0)
-
-            image_rgb = np.flipud(img_rgb)
-            
-            publish_data(image_rgb)
+            pub.publish(bridge.cv2_to_imgmsg(img_rgb))
+            rate.sleep()
+            # publish_data(img_rgb)
             # cv2.imshow('img', image_rgb)
             # key=cv2.waitKey(1)
             # if key==ord('q'):

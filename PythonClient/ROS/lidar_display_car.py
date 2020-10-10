@@ -38,7 +38,7 @@ def main():
 
 			points = np.array(lidarData.point_cloud,dtype=np.dtype('f4'))
 			points = np.reshape(points,(int(points.shape[0]/3),3))
-			print('points:',points)
+			# print('points:',points)
 			pc = pub_pointcloud(points)
 			pointcloud_pub.publish(pc)
 			rate.sleep()
