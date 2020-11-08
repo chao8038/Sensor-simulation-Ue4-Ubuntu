@@ -10,14 +10,28 @@ from sensor_msgs.msg import Image
 # AirSim Python API
 import airsim
 
-import cv2
 import numpy as np
 
 from cv_bridge import CvBridge
 
-pub = rospy.Publisher("airsim/image_seg", Image, queue_size=10)
-rospy.init_node('image_raw', anonymous=True)
+from sensor_msgs.msg import PointCloud
+from geometry_msgs.msg import Point32
+
+img_pub = rospy.Publisher("airsim/image_raw", Image, queue_size=10)
+seg_pub = rospy.Publisher("airsim/image_seg", Image, queue_size=10)
+pointcloud_pub = rospy.Publisher('airsim/pointcloud', PointCloud, queue_size=10)
+rospy.init_node('Airsim', anonymous=True)
 rate = rospy.Rate(100) # 10hz
+
+def pub_pointcloud(points):
+	pc = PointCloud()
+	pc.header.stamp = rospy.Time.now()
+	pc.header.frame_id = 'airsim'
+
+	for i in range(len(points)):
+		pc.points.append(Point32(points[i][0],points[i][1],points[i][2]))
+	return pc
+
 
 def main():
     # connect to the AirSim simulator 
@@ -48,23 +62,41 @@ def main():
     client.simSetSegmentationObjectID("SM_HU_Deco_SM_Dumpster2[\w]*", 19, True)
     client.simSetSegmentationObjectID("thsnbarhx_LOD[\w]*", 19, True)
     client.simSetSegmentationObjectID("SM_NYC_Deco_Exterior01_Bollard[\w]*", 19, True)
-    
 
     bridge = CvBridge()
 
     while not rospy.is_shutdown():
          # get camera images from the car
-        responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Segmentation, False, False)])
+        img_responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
+        seg_responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Segmentation, False, False)])
+        # get the lidar data
+        lidarData = client.getLidarData()
         try:
-            response = responses[0]
-            img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8)
-            img_rgb = img1d.reshape(response.height, response.width, 3)
+            img_response = img_responses[0]
+            img1d = np.fromstring(img_response.image_data_uint8, dtype=np.uint8)
+            img_rgb = img1d.reshape(img_response.height, img_response.width, 3)
+
+            seg_response = seg_responses[0]
+            seg1d = np.fromstring(seg_response.image_data_uint8, dtype=np.uint8)
+            seg_rgb = seg1d.reshape(seg_response.height, seg_response.width, 3)
             
+        except ValueError:
+            img1d = np.zeros((2764800,), dtype=np.uint8)
+            img_rgb = img1d.reshape(720, 1280, 3)
+            seg1d = np.zeros((2764800,), dtype=np.uint8)
+            seg_rgb = img1d.reshape(720, 1280, 3)
+        
+        try:
+            points = np.array(lidarData.point_cloud,dtype=np.dtype('f4'))
+            points = np.reshape(points,(int(points.shape[0]/3),3))
+            pc = pub_pointcloud(points)
+            pointcloud_pub.publish(pc)
         except Exception as e:
             print(e)
-            img1d = np.ones((2764800,), dtype=np.uint8)
-            img_rgb = img1d.reshape(720, 1280, 3)
-        pub.publish(bridge.cv2_to_imgmsg(img_rgb, "bgr8"))
+
+        img_pub.publish(bridge.cv2_to_imgmsg(img_rgb, "bgr8"))
+        seg_pub.publish(bridge.cv2_to_imgmsg(seg_rgb, "bgr8"))
+        
         rate.sleep()
 
 if __name__ == '__main__':

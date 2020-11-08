@@ -27,7 +27,7 @@ def main():
 	client.armDisarm(True)
 
 	pointcloud_pub = rospy.Publisher('/pointcloud', PointCloud, queue_size=10)
-	rate = rospy.Rate(10000)
+	rate = rospy.Rate(100)
 
 	while not rospy.is_shutdown():
 
