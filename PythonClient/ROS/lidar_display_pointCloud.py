@@ -11,11 +11,11 @@ from sensor_msgs.msg import LaserScan,PointCloud
 def pub_pointcloud(points):
 	pc = PointCloud()
 	pc.header.stamp = rospy.Time.now()
-	pc.header.frame_id = 'lidar'
+	pc.header.frame_id = 'airsim'
 
 	for i in range(len(points)):
 		pc.points.append(Point32(points[i][0],points[i][1],points[i][2]))
-	print('pc:',pc)
+	# print('pc:',pc)
 	return pc
 
 def main():
@@ -36,10 +36,10 @@ def main():
 		#print('lidar',lidarData)
 
 		if len(lidarData.point_cloud) >3:
-			print(len(lidarData.point_cloud))
+			# print(len(lidarData.point_cloud))
 			points = np.array(lidarData.point_cloud,dtype=np.dtype('f4'))
 			points = np.reshape(points,(int(points.shape[0]/3),3))
-			print('points:',points)
+			# print('points:',points)
 			pc = pub_pointcloud(points)
 			pointcloud_pub.publish(pc)
 			rate.sleep()
