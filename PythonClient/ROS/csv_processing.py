@@ -12,20 +12,21 @@ def csv_read(file_path) -> list:
   return rows
 
 def csv_write(wirter_content, data_path) -> None:
-  file_path = data_path + 'frame0000.csv'
+  file_path = data_path + 'point_cloud_new.csv'
   with open(file_path, 'w', newline='') as csvfile:
     # 建立 CSV 檔寫入器
     writer = csv.writer(csvfile)
 
     # 寫入一列資料
-    writer.writerow(wirter_content)
+    for data in wirter_content:
+      writer.writerow(data[4:])
 
 def main():
-  data_path = "/home/aiotlab/Documents/Unreal-data/LIDAR-test/"
+  data_path = "/home/aiotlab/Documents/Unreal-data/2020-11-08-17-01-42/"
   file_name = 'pointcloud.csv'
   file_path = data_path + file_name
   csv_rows = csv_read(file_path)
-  csv_write(csv_rows[1][4:], data_path)
+  csv_write(csv_rows, data_path)
 
 if __name__ == "__main__":
     main()
