@@ -389,3 +389,5 @@ PythonClient/docs/_build
 /Unreal
 /venv
 catkin_workspace/
+PythonClient/ROS/pointcloud2img.py
+/output
