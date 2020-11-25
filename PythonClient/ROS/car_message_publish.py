@@ -17,9 +17,9 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import PointCloud
 from geometry_msgs.msg import Point32
 
-img_pub = rospy.Publisher("airsim/image_raw", Image, queue_size=10)
-seg_pub = rospy.Publisher("airsim/image_seg", Image, queue_size=10)
-pointcloud_pub = rospy.Publisher('airsim/pointcloud', PointCloud, queue_size=10)
+img_pub = rospy.Publisher("airsim/image_raw", Image, queue_size=1)
+seg_pub = rospy.Publisher("airsim/image_seg", Image, queue_size=1)
+pointcloud_pub = rospy.Publisher('airsim/pointcloud', PointCloud, queue_size=1)
 rospy.init_node('Airsim', anonymous=True)
 rate = rospy.Rate(100) # 10hz
 
@@ -90,12 +90,15 @@ def main():
             points = np.array(lidarData.point_cloud,dtype=np.dtype('f4'))
             points = np.reshape(points,(int(points.shape[0]/3),3))
             pc = pub_pointcloud(points)
+            
+            img_pub.publish(bridge.cv2_to_imgmsg(img_rgb, "bgr8"))
+            seg_pub.publish(bridge.cv2_to_imgmsg(seg_rgb, "bgr8"))
             pointcloud_pub.publish(pc)
+
         except Exception as e:
             print(e)
 
-        img_pub.publish(bridge.cv2_to_imgmsg(img_rgb, "bgr8"))
-        seg_pub.publish(bridge.cv2_to_imgmsg(seg_rgb, "bgr8"))
+        
         
         rate.sleep()
 

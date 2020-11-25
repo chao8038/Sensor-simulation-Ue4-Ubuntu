@@ -28,13 +28,13 @@ def draw3DpointCloud(point_cloud: np.array) -> None:
 # print(data)
 
 A = np.array([
-                [395,0,640],
+                [790,0,640],
                 [0,395,360],
                 [0,0,1]
              ], dtype='float32')
 
 
-tvec = np.array([[-0.3,-0.3,-0.3]], dtype='float32')
+tvec = np.array([[-0.3,-0.3,-3]], dtype='float32')
 
 # 80度
 r3mat = get_rmatrix(90) 
@@ -61,7 +61,7 @@ rvec, _ = cv2.Rodrigues(rmat)
 
 dist_coef = np.zeros(4, dtype='float32')
 
-with open(r"C:\Users\chaoyu\Downloads\2020-11-08-17-01-42\point_cloud_new.csv", newline='') as csvfile:
+with open("/home/aiotlab/Documents/Unreal-data/2020-11-08-17-01-42/point_cloud_new.csv", newline='') as csvfile:
     # 讀取 CSV 檔案內容
     csv_row = list(csv.reader(csvfile))
     count = 0
@@ -78,9 +78,9 @@ with open(r"C:\Users\chaoyu\Downloads\2020-11-08-17-01-42\point_cloud_new.csv", 
         for i in range(step):
             index = i*3
             # 移除坑洞內的點雲
-            # if float(data[index+2])>1.5:
-                # print({'x':float(data[index]), 'y':float(data[index+1]), 'z':float(data[index+2])})
-                # continue
+            if float(data[index+2])>1.5:
+                print({'x':float(data[index]), 'y':float(data[index+1]), 'z':float(data[index+2])})
+                continue
                 
             pc = np.float32([[float(data[index]), float(data[index+1]), float(data[index+2])]])
             pointcloud = np.append(pointcloud, pc, axis=0)
@@ -111,12 +111,12 @@ with open(r"C:\Users\chaoyu\Downloads\2020-11-08-17-01-42\point_cloud_new.csv", 
 
         # show the numpy array
 
-        # cv2.imshow("Image", test)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow("Image", test)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # save to png image
-        save_img = test.astype(np.int16)
-        file = 'output/test1/test' + str(count) + '.png' 
-        cv2.imwrite(file,save_img)
-        count+=1
+        # save_img = test.astype(np.int16)
+        # file = 'output/test1/test' + str(count) + '.png' 
+        # cv2.imwrite(file,save_img)
+        # count+=1
