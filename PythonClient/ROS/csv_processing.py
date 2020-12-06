@@ -22,7 +22,7 @@ def csv_write(wirter_content, data_path) -> None:
       writer.writerow(data[4:])
 
 def main():
-  data_path = "/home/aiotlab/Documents/Unreal-data/2020-11-25-21-29-42/"
+  data_path = "/home/aiotlab/Documents/Unreal-data/2020-11-26-21-09-45/"
   file_name = 'point_cloud.csv'
   file_path = data_path + file_name
   csv_rows = csv_read(file_path)
