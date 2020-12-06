@@ -2,9 +2,88 @@ import airsim
 import cv2
 import numpy as np
 import os
-import setup_path 
 import time
+import math
 
+def rotation_Xmatrix(degrees: int) -> np.array:
+    red = math.pi/180 * degrees
+
+    matrix  = np.array([[1,0,0],
+                        [0, math.cos(red),math.sin(red)],
+                        [0,-math.sin(red),math.cos(red)]], dtype='float32')    
+    return matrix
+
+def rotation_Ymatrix(degrees: int) -> np.array:
+    red = math.pi/180 * degrees
+
+    matrix  = np.array([[math.cos(red),0,math.sin(red)],
+                        [0,1,0],
+                        [-math.sin(red),0,math.cos(red)]], dtype='float32')    
+    return matrix
+
+def rotation_Zmatrix(degrees: int) -> np.array:
+    red = math.pi/180 * degrees
+
+    matrix  = np.array([[math.cos(red),-math.sin(red),0],
+                        [math.sin(red), math.cos(red),0],
+                        [0,0,1]], dtype='float32')    
+    return matrix
+
+def pointCloud2image(pointCloud, file_name):
+    rmat  = np.array([[1,0,0],
+                  [0,1,0],
+                  [0,0,1]], dtype='float32')
+    rmat = rmat.dot(rotation_Zmatrix(90).dot(rotation_Ymatrix(90).dot(rotation_Xmatrix(180))))
+    A = np.array([
+                [790,0,640],
+                [0,395,360],
+                [0,0,1]
+             ], dtype='float32')
+
+    dist_coef = np.zeros(4, dtype='float32')
+    tvec = np.array([[0,-1,0.5]], dtype='float32')
+
+    rvec, _ = cv2.Rodrigues(rmat)
+
+    # 移除坑洞內的點雲
+    pointCloud = pointCloud[~(pointCloud[:,2]>1.05)]
+
+    image_point, _ = cv2.projectPoints(pointCloud, rvec, tvec, A, dist_coef)
+
+    img = np.zeros((720, 1280), dtype='float32')
+
+
+    # test = np.zeros((720, 1280), dtype='float32')
+    for point in image_point:
+        # print(point[0][0].astype(int), point[0][1].astype(int))
+        u = point[0][0].astype(int) -1
+        v = point[0][1].astype(int) -1
+        if v >= 720:
+            v = 719
+        elif v<0:
+            v = 0
+        if u >= 1280:
+            u = 1279
+        elif u<0:
+            u = 0
+        img[v][u] = 255
+
+
+    # 鏡像翻轉np.fliplr(test)
+    img = np.fliplr(img)
+
+    # show the numpy array
+
+    # cv2.imshow("Image", img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    # save to png image
+
+    save_img = img.astype(np.int16)
+    file = '/home/aiotlab/AirSim/output/20201206/pointCloudimg/' + file_name + '.png' 
+    cv2.imwrite(file,save_img)
+    return
 # connect to the AirSim simulator 
 client = airsim.CarClient()
 client.confirmConnection()
@@ -13,32 +92,46 @@ car_controls = airsim.CarControls()
 
 # setup segmentation SM_NYC_Sidewalks_Straight_3
 
-found = client.simSetSegmentationObjectID("SM_NYC_Sidewalks_Straight[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("thsnbarhx_LOD[\w]*", 19, True) # --- all objectID = 12	color=[242, 107, 146]
-found = client.simSetSegmentationObjectID("SM_BuildingFull[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_BGBuilding[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Cube[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Plane[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Conifer[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_NYC_Deco_StreetLight[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Sky[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("BP_Sky_Sphere[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Pothole[\w]*", 4, True)
-found = client.simSetSegmentationObjectID("road[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_MERGED_ON_Brep[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_ShopSet_Corner[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_Awning_[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_Infil1_City_Decos_Bench[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_HU_Deco_SM_Trashcan[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_ShopSet_Corner[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("thsnbc3hx_LOD[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("thsnbc3hx_LOD[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_ShopSet_Wall[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("SM_ShopSet_Sign[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("PostProcessVolume[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Material_decal[\w]*", 19, True)
-idx = 1
-while(idx < 150):
+client.simSetSegmentationObjectID("Cube[\w]*", 19, True)
+client.simSetSegmentationObjectID("Conifer[\w]*", 19, True)
+client.simSetSegmentationObjectID("road[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_MERGED_ON_Brep[\w]*", 19, True)
+
+# set color
+client.simSetSegmentationObjectID("SM_NYC_Sidewalks_Straight[\w]*", 19, True)
+client.simSetSegmentationObjectID("thsnbarhx_[\w]*", 19, True) # --- all objectID = 12	color=[242, 107, 146]
+client.simSetSegmentationObjectID("SM_BuildingFull[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_BGBuilding[\w]*", 19, True)
+client.simSetSegmentationObjectID("Plane[\w]*", 4, True)
+client.simSetSegmentationObjectID("SM_NYC_Deco_StreetLight[\w]*", 19, True)
+client.simSetSegmentationObjectID("Sky[\w]*", 19, True)
+client.simSetSegmentationObjectID("BP_Sky_Sphere[\w]*", 19, True)
+client.simSetSegmentationObjectID("road[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_ShopSet_Corner[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_Awning_[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_Infil1_City_Decos_Bench[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_HU_Deco_SM_Trashcan[\w]*", 19, True)
+client.simSetSegmentationObjectID("thsnbc3hx_LOD[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_ShopSet_Wall[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_ShopSet_Sign[\w]*", 19, True)
+client.simSetSegmentationObjectID("PostProcessVolume[\w]*", 19, True)
+client.simSetSegmentationObjectID("Material_decal[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_NYC_Deco_Exterior01_FireHydrant[\w]*", 19, True)
+client.simSetSegmentationObjectID("MSM_NYC_Deco_Exterior01[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_HU_Deco_SM_Dumpster2[\w]*", 19, True)
+client.simSetSegmentationObjectID("thsnbarhx_LOD[\w]*", 19, True)
+client.simSetSegmentationObjectID("SM_NYC_Deco_Exterior01_Bollard[\w]*", 19, True)
+
+
+img_save_path = '/home/aiotlab/AirSim/output/20201206/img/'
+seg_save_path = '/home/aiotlab/AirSim/output/20201206/seg/'
+if not os.path.exists(img_save_path):
+    os.makedirs(img_save_path)
+if not os.path.exists(seg_save_path):
+    os.makedirs(seg_save_path)
+
+idx = 650
+while(idx < 900):
     car_state = client.getCarState()
     pd = car_state.kinematics_estimated.position
     # if idx % 150 == 0:
@@ -59,45 +152,37 @@ while(idx < 150):
     car_controls.brake = 0 #remove brake
     # get camera images from the car
     # if idx % 150 > 3 :
-    responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene)])
-    response = responses[0]
 
-    responses1 = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Segmentation)])
-    response1 = responses1[0]
+    lidarData = client.getLidarData()
+    points = np.array(lidarData.point_cloud,dtype=np.dtype('f4'))
+    points = np.reshape(points,(int(points.shape[0]/3),3))
 
-    for response in responses:
-        save_path = 'd:/pothole/UE4/20200830/img/'
-        filename = save_path + 'frame' + str(idx)
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        if response.pixels_as_float:
-            print("Type %d, size %d" % (response.image_type, len(response.image_data_float)))
-            airsim.write_pfm(os.path.normpath(filename + '.pfm'), airsim.get_pfm_array(response))
-        elif response.compress: #png format
-            print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-            airsim.write_file(os.path.normpath(filename + '.png'), response.image_data_uint8)
-        else: #uncompressed array
-            print("Type %d, size %d" % (response.image_type, len(response.image_data_uint8)))
-            img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) # get numpy array
-            img_rgb = img1d.reshape(response.height, response.width, 3) # reshape array to 3 channel image array H X W X 3
-            cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
+    pointCloud2image(points, 'frame' + str(idx))
 
-    for response1 in responses1:
-        save_path = 'd:/pothole/UE4/20200830/seg/'
-        filename = save_path + 'frame' + str(idx)
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        if response1.pixels_as_float:
-            print("Type %d, size %d" % (response1.image_type, len(response1.image_data_float)))
-            airsim.write_pfm(os.path.normpath(filename + '.pfm'), airsim.get_pfm_array(response1))
-        elif response1.compress: #png format
-            print("Type %d, size %d" % (response1.image_type, len(response1.image_data_uint8)))
-            airsim.write_file(os.path.normpath(filename + '.png'), response1.image_data_uint8)
-        else: #uncompressed array
-            print("Type %d, size %d" % (response1.image_type, len(response1.image_data_uint8)))
-            img1d = np.fromstring(response1.image_data_uint8, dtype=np.uint8) # get numpy array
-            img_rgb = img1d.reshape(response1.height, response1.width, 3) # reshape array to 3 channel image array H X W X 3
-            cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
+    img_result = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False),
+                                             airsim.ImageRequest("0", airsim.ImageType.Segmentation, False, False)])
+
+    try:
+        img_response = img_result[0]
+        img1d = np.fromstring(img_response.image_data_uint8, dtype=np.uint8)
+        img_rgb = img1d.reshape(img_response.height, img_response.width, 3)
+
+        img_filename = img_save_path + 'frame' + str(idx)
+        cv2.imwrite(os.path.normpath(img_filename + '.png'), img_rgb)
+
+        seg_response = img_result[1]
+        seg1d = np.fromstring(seg_response.image_data_uint8, dtype=np.uint8)
+        seg_rgb = seg1d.reshape(seg_response.height, seg_response.width, 3)
+
+        seg_filename = seg_save_path + 'frame' + str(idx)
+        cv2.imwrite(os.path.normpath(seg_filename + '.png'), seg_rgb) # write to png
+        
+    except ValueError:
+        img1d = np.zeros((2764800,), dtype=np.uint8)
+        img_rgb = img1d.reshape(720, 1280, 3)
+        seg1d = np.zeros((2764800,), dtype=np.uint8)
+        seg_rgb = img1d.reshape(720, 1280, 3)
+
 
     car_controls.throttle = 0.6
     car_controls.steering = 0
