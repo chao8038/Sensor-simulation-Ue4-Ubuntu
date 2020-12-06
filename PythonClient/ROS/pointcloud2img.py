@@ -61,7 +61,7 @@ rvec, _ = cv2.Rodrigues(rmat)
 
 dist_coef = np.zeros(4, dtype='float32')
 
-with open("/home/aiotlab/Documents/Unreal-data/2020-11-08-17-01-42/point_cloud_new.csv", newline='') as csvfile:
+with open("/home/aiotlab/Documents/Unreal-data/2020-11-25-21-29-42/point_cloud_new.csv", newline='') as csvfile:
     # 讀取 CSV 檔案內容
     csv_row = list(csv.reader(csvfile))
     count = 0
@@ -117,6 +117,6 @@ with open("/home/aiotlab/Documents/Unreal-data/2020-11-08-17-01-42/point_cloud_n
 
         # save to png image
         # save_img = test.astype(np.int16)
-        # file = 'output/test1/test' + str(count) + '.png' 
+        # file = 'output/test2/test' + str(count) + '.png' 
         # cv2.imwrite(file,save_img)
         # count+=1
