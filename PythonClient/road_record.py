@@ -125,10 +125,13 @@ client.simSetSegmentationObjectID("SM_NYC_Deco_Exterior01_Bollard[\w]*", 19, Tru
 
 img_save_path = 'output/20201224/img/'
 seg_save_path = 'output/20201224/seg/'
+pointCloud_save_path = 'output/20201224/pointCloudimg/'
 if not os.path.exists(img_save_path):
     os.makedirs(img_save_path)
 if not os.path.exists(seg_save_path):
     os.makedirs(seg_save_path)
+if not os.path.exists(pointCloud_save_path):
+    os.makedirs(pointCloud_save_path)
 
 idx = 650
 while(idx < 900):
