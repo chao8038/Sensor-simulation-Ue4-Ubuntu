@@ -388,3 +388,6 @@ PythonClient/docs/_build
 # chaoyu
 /Unreal
 /venv
+*.png
+*.jpg
+/output
