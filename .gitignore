@@ -393,3 +393,4 @@ PythonClient/docs/_build
 /output
 /catkin_workspace
 PythonClient/ROS/pointcloud2img.py
+.vscode/

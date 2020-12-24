@@ -81,7 +81,7 @@ def pointCloud2image(pointCloud, file_name):
     # save to png image
 
     save_img = img.astype(np.int16)
-    file = '/home/aiotlab/AirSim/output/20201206/pointCloudimg/' + file_name + '.png' 
+    file = 'output/20201224/pointCloudimg/' + file_name + '.png' 
     cv2.imwrite(file,save_img)
     return
 # connect to the AirSim simulator 
@@ -123,8 +123,8 @@ client.simSetSegmentationObjectID("thsnbarhx_LOD[\w]*", 19, True)
 client.simSetSegmentationObjectID("SM_NYC_Deco_Exterior01_Bollard[\w]*", 19, True)
 
 
-img_save_path = '/home/aiotlab/AirSim/output/20201206/img/'
-seg_save_path = '/home/aiotlab/AirSim/output/20201206/seg/'
+img_save_path = 'output/20201224/img/'
+seg_save_path = 'output/20201224/seg/'
 if not os.path.exists(img_save_path):
     os.makedirs(img_save_path)
 if not os.path.exists(seg_save_path):
