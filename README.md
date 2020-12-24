@@ -1,8 +1,3 @@
----
-title: 'Sensor data collection in Unreal-Engine4'
-disqus: hackmd
----
-
 Sensor data collection in Unreal-Engine4
 ===
 
@@ -36,6 +31,8 @@ source venv/bin/activate
 ```shell=
 python -m pip install -r requirements.txt 
 ```
+### Unreal Engine sensor setting
+1. move setting.json to document/Airsim/
 
 ## Feature 
 ### record road images
