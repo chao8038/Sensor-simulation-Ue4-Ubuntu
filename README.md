@@ -5,19 +5,17 @@ disqus: hackmd
 
 Sensor data collection in Unreal-Engine4
 ===
-![downloads](https://img.shields.io/github/downloads/atom/atom/total.svg)
-![build](https://img.shields.io/appveyor/ci/:user/:repo.svg)
-![chat](https://img.shields.io/discord/:serverId.svg)
 
 ## Table of Contents
 
 * Sensor data collection in Unreal-Engine4
-  * Table of Contents
+  * Requirement
   * Beginners Guide
-  * Feature: record road images
-  * User story
-    * User flows
-    * Steps
+  * Feature
+    * record road images
+      * User story
+      * User flows
+      * Steps
 
 ## Requirement
 1. OS: Ubuntu 18.04LTS
@@ -27,7 +25,7 @@ Sensor data collection in Unreal-Engine4
 
 If you are a total beginner to this, start here!
 
-Create project
+### Create project
 ---
 1. Create virtual environment and activate:
 ```shell=
@@ -39,10 +37,11 @@ source venv/bin/activate
 python -m pip install -r requirements.txt 
 ```
 
-Feature: record road images
+## Feature 
+### record road images
 ---
 
-### User story
+#### User story
 ---
 
 Feature: record road images
@@ -51,11 +50,11 @@ Feature: record road images
 * When the User starts a process
 * Then Simulated vehicle of AirSim will start to ahead and record the images automatically
 
-### User flows
+#### User flows
 ---
 ![](https://i.imgur.com/DtEP32K.png)
 
-### Steps
+#### Steps
 ---
 1. start the Unreal Project of vehicle simulation.
 2. excute the code PythonClient/road_record.py
