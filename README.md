@@ -23,13 +23,24 @@ If you are a total beginner to this, start here!
 ### Create project
 ---
 1. Create virtual environment and activate:
+Ubuntu:
 ```shell=
-virtualenv venv --python=python3.6
+virtualenv venv
 source venv/bin/activate
 ```
+windows:
+```shell=
+virtualenv venv
+venv\Scripts\activate
+```
 2. intstall requirement.txt
+Ubuntu:
 ```shell=
 python -m pip install -r requirements.txt 
+```
+Windows:
+```shell=
+python -m pip install -r requirements_windows.txt 
 ```
 ### Unreal Engine sensor setting
 1. move setting.json to document/Airsim/
