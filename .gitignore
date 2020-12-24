@@ -392,3 +392,4 @@ PythonClient/docs/_build
 *.jpg
 /output
 /catkin_workspace
+PythonClient/ROS/pointcloud2img.py
