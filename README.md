@@ -23,6 +23,7 @@ If you are a total beginner to this, start here!
 ### Create project
 ---
 1. Create virtual environment and activate:
+
 Ubuntu:
 ```shell=
 virtualenv venv
@@ -34,6 +35,7 @@ virtualenv venv
 venv\Scripts\activate
 ```
 2. intstall requirement.txt
+
 Ubuntu:
 ```shell=
 python -m pip install -r requirements.txt 
