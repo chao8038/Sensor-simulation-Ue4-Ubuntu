@@ -2,7 +2,6 @@ import airsim
 import cv2
 import numpy as np
 import os
-import setup_path 
 import time
 
 # connect to the AirSim simulator 
@@ -17,14 +16,18 @@ found = client.simSetSegmentationObjectID("SM_NYC_Sidewalks_Straight[\w]*", 19, 
 found = client.simSetSegmentationObjectID("thsnbarhx_LOD[\w]*", 19, True) # --- all objectID = 12	color=[242, 107, 146]
 found = client.simSetSegmentationObjectID("SM_BuildingFull[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_BGBuilding[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Cube[\w]*", 19, True)
+# found = client.simSetSegmentationObjectID("Cube[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("Plane[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("Conifer[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_NYC_Deco_StreetLight[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("Sky[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("BP_Sky_Sphere[\w]*", 19, True)
-found = client.simSetSegmentationObjectID("Pothole[\w]*", 4, True)
+# found = client.simSetSegmentationObjectID("Pothole[\w]*", 4, True)
+found = client.simSetSegmentationObjectID("Cube[\w]*", 4, True)
 found = client.simSetSegmentationObjectID("road[\w]*", 19, True)
+found = client.simSetSegmentationObjectID("縱向裂縫[\w]*", 19, True)
+found = client.simSetSegmentationObjectID("縱向列縫[\w]*", 19, True)
+found = client.simSetSegmentationObjectID("橫向裂縫[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_MERGED_ON_Brep[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_ShopSet_Corner[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_Awning_[\w]*", 19, True)
@@ -37,8 +40,8 @@ found = client.simSetSegmentationObjectID("SM_ShopSet_Wall[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("SM_ShopSet_Sign[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("PostProcessVolume[\w]*", 19, True)
 found = client.simSetSegmentationObjectID("Material_decal[\w]*", 19, True)
-idx = 1
-while(idx < 150):
+idx = 900
+while idx<1200:
     car_state = client.getCarState()
     pd = car_state.kinematics_estimated.position
     # if idx % 150 == 0:
@@ -66,7 +69,7 @@ while(idx < 150):
     response1 = responses1[0]
 
     for response in responses:
-        save_path = 'd:/pothole/UE4/20200830/img/'
+        save_path = 'd:/pothole/UE4/20210714/img/'
         filename = save_path + 'frame' + str(idx)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -83,7 +86,7 @@ while(idx < 150):
             cv2.imwrite(os.path.normpath(filename + '.png'), img_rgb) # write to png
 
     for response1 in responses1:
-        save_path = 'd:/pothole/UE4/20200830/seg/'
+        save_path = 'd:/pothole/UE4/20210714/seg/'
         filename = save_path + 'frame' + str(idx)
         if not os.path.exists(save_path):
             os.makedirs(save_path)
