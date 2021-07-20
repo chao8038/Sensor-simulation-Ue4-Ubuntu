@@ -388,6 +388,9 @@ PythonClient/docs/_build
 # chaoyu
 /Unreal
 /venv
-catkin_workspace/
-PythonClient/ROS/pointcloud2img.py
+*.png
+*.jpg
 /output
+/catkin_workspace
+PythonClient/ROS/pointcloud2img.py
+.vscode/

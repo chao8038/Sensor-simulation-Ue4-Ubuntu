@@ -79,7 +79,7 @@ rmat = rmat.dot(rotation_Zmatrix(90).dot(rotation_Ymatrix(90).dot(rotation_Xmatr
 rvec, _ = cv2.Rodrigues(rmat)
 
 dist_coef = np.zeros(4, dtype='float32')
-with open(r"C:\Users\chaoyu\Downloads\2020-11-26-21-09-45\point_cloud_new.csv", newline='') as csvfile:
+with open("/home/aiotlab/Documents/Unreal-data/2020-11-26-21-09-45/point_cloud.csv", newline='') as csvfile:
     # 讀取 CSV 檔案內容
     csv_row = list(csv.reader(csvfile))
     count = -1
@@ -133,9 +133,9 @@ with open(r"C:\Users\chaoyu\Downloads\2020-11-26-21-09-45\point_cloud_new.csv", 
 
         # show the numpy array
 
-        cv2.imshow("Image", test)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow("Image", test)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         # save to png image
         save_img = test.astype(np.int16)
